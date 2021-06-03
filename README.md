@@ -1,5 +1,10 @@
 # Dockerfile
 
+Here is an example of a simple [Docker file](https://docs.docker.com/engine/reference/builder/).
+In this case, we are reusing the [`r-base` image with tag `latest`](https://hub.docker.com/_/r-base);
+we then copy a bash script `checkit.sh`; and finalize with `Rscript` installing
+the [**igraph**](https://cran.r-project.org/package=igraph) R package.
+
 ```Dockerfile
 FROM r-base:latest
 COPY checkit.sh .
@@ -14,13 +19,31 @@ cd /home/docker/
 R CMD check netplot
 ```
 
-# Usage
-
 To build the docker container, named `docker-example`, use:
 
 ```
 sudo docker build --compress -t docker-example .
 ```
+
+This image is now available to be used in your computer. In case you want it
+to release it to https://hub.docker.com, you'd need to do the following:
+
+```bash
+sudo docker login # follow the prompts
+sudo docker tag docker-example:latest uscbiostats/docker-example:latest
+sudo docker push uscbiostats/docker-example:latest
+```
+
+Where `uscbiostats` is the name of the account to which you will be pushing this
+image. This way, users who have access to docker can simply type
+
+```bash
+sudo docker pull uscbiostats/docker-example:latest
+```
+
+To have access to this image that contains R with igraph installed.
+
+# Usage
 
 To execute it interactively (with R), type:
 
