@@ -1,0 +1,41 @@
+# This example of GH action file:
+#
+# 1. downloads the container from gvegayon/netplot-deps
+# 2. Prints info about the session info
+# 3. Builds the R package w/o the manual, and
+# 4. Runs R CMD check 
+#
+# This takes less time than using r-lib/* actions.
+
+name: R ci w docker
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: Ubuntu-latest
+    strategy:
+      matrix:
+        include:
+        - name: latest                       # Tag
+          cntr: gvegayon/netplot-deps:latest # Container
+          pkg: netplot                       # Name of the R package 
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Container
+        run: docker pull ${{ matrix.cntr }}
+
+      - name: SessionInfo
+        run: docker run --rm -i -v ${PWD}:/mnt -w /mnt ${{ matrix.cntr }} R -q -e 'sessionInfo()'
+
+      - name: Build
+        run: docker run --rm -i -v ${PWD}:/mnt -w /mnt ${{ matrix.cntr }} R CMD build --no-build-vignettes --no-manual .
+
+      - name: Check
+        run: docker run --rm -i -v ${PWD}:/mnt -w /mnt -e CI=true ${{ matrix.cntr }} R CMD check --no-vignettes --no-manual ${{ matrix.pkg }}_*.tar.gz
