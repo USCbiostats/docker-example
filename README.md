@@ -63,4 +63,17 @@ If you want to run it while having access to the current directory:
 sudo docker run -i -v$(pwd):/home/ -w/home/ docker-example Rscript -e '1 + 1'
 ```
 
+# Running Docker in rootless-mode
+
+https://docs.docker.com/engine/security/rootless/ while installing the rootless
+mode, I encountered a problem regarding a missing binary in Ubuntu 18.04. This
+repository had an issue with the problem:
+
+https://github.com/moby/moby/issues/41781#issuecomment-743267936
+
+In my case, I ran the following steps:
+
+1. cd /usr/bin
+2. sudo curl -o slirp4netns --fail -L https://github.com/rootless-containers/slirp4netns/releases/download/v1.1.10/slirp4netns-$(uname -m)
+3. chmod +x slirp4netns
 
